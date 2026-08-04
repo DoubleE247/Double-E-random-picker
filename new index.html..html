@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0b0b" />
+  <title>Double E Giveaway Picker</title>
+  <style>
+* { box-sizing: border-box; }
+:root {
+  --bg: #080808;
+  --card: #151515;
+  --card-2: #1d1d1d;
+  --text: #f7f7f7;
+  --muted: #a9a9a9;
+  --gold: #f4c84a;
+  --gold-dark: #bd8e0d;
+  --line: #2c2c2c;
+  --danger: #ff6767;
+}
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #28200b 0%, var(--bg) 32%);
+  color: var(--text);
+}
+button, input { font: inherit; }
+button { cursor: pointer; }
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: max(18px, env(safe-area-inset-top)) 18px 18px;
+  border-bottom: 1px solid rgba(244, 200, 74, .2);
+  background: rgba(8,8,8,.88);
+  backdrop-filter: blur(14px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.brand-mark {
+  width: 48px;
+  height: 48px;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  letter-spacing: -2px;
+  color: #090909;
+  background: linear-gradient(145deg, #ffe991, var(--gold-dark));
+  box-shadow: 0 0 30px rgba(244,200,74,.18);
+}
+.brand-mark.large { width: 84px; height: 84px; border-radius: 26px; font-size: 28px; margin: 0 auto 20px; }
+h1 { font-size: 18px; margin: 0; }
+.topbar p { margin: 3px 0 0; color: var(--muted); font-size: 13px; }
+.container { width: min(780px, 100%); margin: 0 auto; padding: 18px; }
+.card {
+  background: linear-gradient(180deg, rgba(28,28,28,.98), rgba(17,17,17,.98));
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 22px;
+  margin-bottom: 16px;
+  box-shadow: 0 18px 60px rgba(0,0,0,.25);
+}
+.hero { padding: 30px 22px; }
+.hero h2 { font-size: clamp(28px, 8vw, 44px); line-height: 1.02; margin: 10px 0 12px; letter-spacing: -1.5px; }
+.hero p { color: var(--muted); margin: 0; line-height: 1.55; }
+.eyebrow { color: var(--gold); font-size: 12px; letter-spacing: 2px; font-weight: 800; }
+h3 { margin: 0 0 20px; font-size: 21px; }
+label { display: block; font-weight: 700; margin: 16px 0 8px; }
+input[type="text"], input[type="search"], input[type="file"] {
+  width: 100%;
+  border: 1px solid #3a3a3a;
+  border-radius: 14px;
+  padding: 14px;
+  color: var(--text);
+  background: #0d0d0d;
+}
+input[type="file"]::file-selector-button {
+  border: 0;
+  border-radius: 10px;
+  background: var(--gold);
+  color: #111;
+  font-weight: 800;
+  padding: 9px 12px;
+  margin-right: 10px;
+}
+.hint { color: var(--muted); font-size: 13px; line-height: 1.45; }
+.rules-grid { border-top: 1px solid var(--line); margin-top: 18px; padding-top: 4px; }
+.switch-row { display: flex; gap: 12px; align-items: center; font-weight: 600; }
+.switch-row input { width: 20px; height: 20px; accent-color: var(--gold); }
+.primary, .secondary {
+  border: 0;
+  border-radius: 14px;
+  padding: 14px 18px;
+  font-weight: 900;
+}
+.primary {
+  width: 100%;
+  color: #111;
+  background: linear-gradient(180deg, #ffe582, var(--gold));
+  box-shadow: 0 8px 24px rgba(244,200,74,.17);
+}
+.secondary { color: var(--text); background: #2a2a2a; border: 1px solid #3b3b3b; }
+#importBtn { margin-top: 20px; }
+.stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.stats div { background: #0e0e0e; padding: 16px; border-radius: 15px; border: 1px solid #282828; }
+.stats strong { display: block; font-size: 28px; color: var(--gold); }
+.stats span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+.toolbar { display: grid; gap: 10px; margin: 18px 0 12px; }
+.entry-list { max-height: 360px; overflow: auto; border: 1px solid var(--line); border-radius: 16px; }
+.entry {
+  padding: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.entry:last-child { border-bottom: 0; }
+.entry strong { display: block; margin-bottom: 5px; }
+.entry p { margin: 0; color: var(--muted); font-size: 14px; }
+.draw-btn { margin-top: 18px; font-size: 18px; padding: 17px; }
+.hidden { display: none !important; }
+.draw-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: radial-gradient(circle, #46390b 0%, #080808 52%);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  overflow: hidden;
+}
+.draw-content { text-align: center; width: min(680px, 100%); position: relative; z-index: 2; }
+.close-btn {
+  position: absolute;
+  top: max(18px, env(safe-area-inset-top));
+  right: 18px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid #444;
+  color: white;
+  background: rgba(0,0,0,.5);
+  font-size: 30px;
+  z-index: 3;
+}
+.countdown { font-size: clamp(88px, 28vw, 170px); font-weight: 950; color: var(--gold); line-height: 1; text-shadow: 0 0 40px rgba(244,200,74,.3); }
+.shuffle-name { font-size: clamp(22px, 7vw, 42px); font-weight: 900; min-height: 60px; padding: 12px; }
+.winner-card {
+  background: rgba(17,17,17,.92);
+  border: 2px solid var(--gold);
+  border-radius: 28px;
+  padding: 26px;
+  box-shadow: 0 0 80px rgba(244,200,74,.22);
+}
+.trophy { font-size: 58px; }
+.winner-card p { color: var(--gold); letter-spacing: 3px; font-weight: 900; }
+.winner-card h2 { font-size: clamp(30px, 10vw, 60px); margin: 8px 0 14px; }
+.winner-card blockquote { color: #d6d6d6; margin: 0 auto 16px; max-width: 520px; }
+.winner-card small { color: var(--muted); }
+.winner-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 22px; }
+.confetti span {
+  position: absolute;
+  width: 9px;
+  height: 16px;
+  top: -20px;
+  animation: fall linear forwards;
+}
+@keyframes fall {
+  to { transform: translate3d(var(--drift), 110vh, 0) rotate(720deg); }
+}
+.section-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.text-btn { background: transparent; color: var(--muted); border: 0; padding: 6px; }
+.history-item {
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  padding: 14px;
+  margin-top: 10px;
+  background: #101010;
+}
+.history-item strong { display: block; font-size: 18px; }
+.history-item span { color: var(--gold); display: block; margin-top: 6px; }
+.history-item small { display: block; color: var(--muted); margin-top: 6px; }
+.empty-state { color: var(--muted); text-align: center; padding: 16px; }
+footer { text-align: center; color: #707070; padding: 10px 18px 30px; font-size: 12px; }
+
+.lottery-machine {
+  position: relative;
+  width: min(330px, 86vw);
+  height: 390px;
+  margin: 18px auto 10px;
+}
+.machine-glow {
+  position: absolute;
+  inset: 15px 30px 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(244,200,74,.25), transparent 65%);
+  filter: blur(16px);
+}
+.machine-drum {
+  position: absolute;
+  left: 50%;
+  top: 10px;
+  transform: translateX(-50%);
+  width: 270px;
+  height: 270px;
+  border-radius: 50%;
+  border: 10px solid #d5a928;
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.18), rgba(255,255,255,.03) 42%, rgba(0,0,0,.4));
+  box-shadow: inset 0 0 35px rgba(255,255,255,.1), 0 0 45px rgba(244,200,74,.2);
+  overflow: hidden;
+}
+.machine-drum::after {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.13);
+}
+.ball {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 25%, #fff4ad 0%, #f4c84a 50%, #b58200 100%);
+  color: #111;
+  font-weight: 950;
+  box-shadow: 0 5px 14px rgba(0,0,0,.45);
+}
+.lottery-machine.spinning .ball { animation: bounceBall 1.1s linear infinite; }
+.ball-1 { left: 30px; top: 34px; animation-delay: -.1s !important; }
+.ball-2 { left: 108px; top: 20px; animation-delay: -.35s !important; }
+.ball-3 { left: 185px; top: 48px; animation-delay: -.7s !important; }
+.ball-4 { left: 52px; top: 116px; animation-delay: -.55s !important; }
+.ball-5 { left: 145px; top: 105px; animation-delay: -.25s !important; }
+.ball-6 { left: 22px; top: 190px; animation-delay: -.85s !important; }
+.ball-7 { left: 105px; top: 180px; animation-delay: -.45s !important; }
+.ball-8 { left: 190px; top: 172px; animation-delay: -.65s !important; }
+@keyframes bounceBall {
+  0%   { transform: translate(0,0) rotate(0deg); }
+  20%  { transform: translate(34px,-18px) rotate(90deg); }
+  45%  { transform: translate(-22px,28px) rotate(180deg); }
+  70%  { transform: translate(18px,38px) rotate(270deg); }
+  100% { transform: translate(0,0) rotate(360deg); }
+}
+.machine-base {
+  position: absolute;
+  left: 50%;
+  top: 265px;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 82px;
+  border-radius: 22px 22px 14px 14px;
+  background: linear-gradient(180deg, #3b2e08, #121212);
+  border: 3px solid #d5a928;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  box-shadow: 0 12px 35px rgba(0,0,0,.45);
+}
+.machine-base span {
+  color: #f7d769;
+  font-weight: 950;
+  letter-spacing: 3px;
+  font-size: 19px;
+}
+.machine-base small {
+  color: white;
+  margin-top: 2px;
+  letter-spacing: 2px;
+  font-weight: 800;
+}
+.winner-chute {
+  position: absolute;
+  right: -4px;
+  top: 220px;
+  width: 88px;
+  height: 120px;
+  border: 4px solid #d5a928;
+  border-radius: 18px;
+  background: #171717;
+  display: grid;
+  place-items: end center;
+  padding-bottom: 10px;
+}
+.winner-ball {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 35% 25%, #fff4ad 0%, #f4c84a 50%, #b58200 100%);
+  color: #111;
+  font-size: 24px;
+  font-weight: 950;
+  transform: translateY(-190px) scale(.4);
+  opacity: 0;
+}
+.winner-ball.drop {
+  animation: winnerDrop 1.15s cubic-bezier(.22,.9,.28,1.15) forwards;
+}
+@keyframes winnerDrop {
+  0% { transform: translateY(-190px) scale(.4) rotate(-240deg); opacity: 0; }
+  65% { transform: translateY(8px) scale(1.08) rotate(15deg); opacity: 1; }
+  100% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+}
+
+@media (min-width: 620px) {
+  .stats { grid-template-columns: repeat(4, 1fr); }
+  .toolbar { grid-template-columns: 1fr auto; }
+}
+
+</style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-mark">DE</div>
+    <div>
+      <h1>Double E Giveaway Picker</h1>
+      <p>Fair, simple and random</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero card">
+      <span class="eyebrow">GIVEAWAY TOOL</span>
+      <h2>Pick a winner from your Facebook comments</h2>
+      <p>Upload a CSV file, filter valid comments and run a secure random draw.</p>
+    </section>
+
+    <section class="card">
+      <h3>1. Giveaway details</h3>
+      <label for="giveawayTitle">Giveaway name</label>
+      <input id="giveawayTitle" type="text" placeholder="e.g. Double E 10K Celebration" />
+
+      <label for="csvFile">Upload comments CSV</label>
+      <input id="csvFile" type="file" accept=".csv,text/csv" />
+      <p class="hint">The app looks for columns such as Name, User, Comment, Message or Text.</p>
+
+      <div class="rules-grid">
+        <label class="switch-row">
+          <input id="requireDone" type="checkbox" checked />
+          <span>Only include comments containing “DONE”</span>
+        </label>
+        <label class="switch-row">
+          <input id="removeDuplicates" type="checkbox" checked />
+          <span>One entry per person</span>
+        </label>
+        <label class="switch-row">
+          <input id="ignoreBlank" type="checkbox" checked />
+          <span>Ignore blank comments</span>
+        </label>
+      </div>
+
+      <button id="importBtn" class="primary">Import entries</button>
+    </section>
+
+    <section id="statsSection" class="card hidden">
+      <h3>2. Entry summary</h3>
+      <div class="stats">
+        <div><strong id="totalCount">0</strong><span>Imported</span></div>
+        <div><strong id="duplicateCount">0</strong><span>Duplicates removed</span></div>
+        <div><strong id="invalidCount">0</strong><span>Invalid</span></div>
+        <div><strong id="validCount">0</strong><span>Valid entries</span></div>
+      </div>
+
+      <div class="toolbar">
+        <input id="searchInput" type="search" placeholder="Search entrants" />
+        <button id="downloadBtn" class="secondary">Download valid CSV</button>
+      </div>
+
+      <div id="entryList" class="entry-list"></div>
+      <button id="startDrawBtn" class="primary draw-btn">Start draw</button>
+    </section>
+
+    <section id="drawSection" class="draw-screen hidden" aria-live="polite">
+      <button id="closeDrawBtn" class="close-btn" aria-label="Close draw">×</button>
+      <div class="draw-content">
+        <div class="brand-mark large">DE</div>
+        <p class="eyebrow">DOUBLE E LUCKY DRAW</p>
+        <div id="lotteryMachine" class="lottery-machine hidden" aria-hidden="true">
+          <div class="machine-glow"></div>
+          <div class="machine-drum">
+            <span class="ball ball-1">1</span>
+            <span class="ball ball-2">2</span>
+            <span class="ball ball-3">3</span>
+            <span class="ball ball-4">4</span>
+            <span class="ball ball-5">5</span>
+            <span class="ball ball-6">6</span>
+            <span class="ball ball-7">7</span>
+            <span class="ball ball-8">8</span>
+          </div>
+          <div class="machine-base">
+            <span>DOUBLE E</span>
+            <small>LUCKY DRAW</small>
+          </div>
+          <div class="winner-chute">
+            <div id="winnerBall" class="winner-ball">?</div>
+          </div>
+        </div>
+        <div id="countdown" class="countdown">3</div>
+        <div id="shuffleName" class="shuffle-name">Preparing draw...</div>
+        <div id="winnerCard" class="winner-card hidden">
+          <div class="trophy">🏆</div>
+          <p>WINNER</p>
+          <h2 id="winnerName"></h2>
+          <blockquote id="winnerComment"></blockquote>
+          <small id="winnerMeta"></small>
+          <div class="winner-actions">
+            <button id="rerollBtn" class="secondary">Draw again</button>
+            <button id="saveWinnerBtn" class="primary">Save winner</button>
+          </div>
+        </div>
+      </div>
+      <div id="confetti" class="confetti" aria-hidden="true"></div>
+    </section>
+
+    <section class="card">
+      <div class="section-heading">
+        <h3>Previous winners</h3>
+        <button id="clearHistoryBtn" class="text-btn">Clear history</button>
+      </div>
+      <div id="historyList" class="history-list">
+        <p class="empty-state">No saved winners yet.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Double E Giveaway Picker · Runs privately in your browser</p>
+  </footer>
+
+  <script>
+let allRows = [];
+let validEntries = [];
+let currentWinner = null;
+
+const $ = (id) => document.getElementById(id);
+
+function parseCSV(text) {
+  const rows = [];
+  let row = [];
+  let field = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const next = text[i + 1];
+
+    if (char === '"' && inQuotes && next === '"') {
+      field += '"';
+      i++;
+    } else if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === "," && !inQuotes) {
+      row.push(field.trim());
+      field = "";
+    } else if ((char === "\n" || char === "\r") && !inQuotes) {
+      if (char === "\r" && next === "\n") i++;
+      row.push(field.trim());
+      if (row.some((value) => value !== "")) rows.push(row);
+      row = [];
+      field = "";
+    } else {
+      field += char;
+    }
+  }
+
+  row.push(field.trim());
+  if (row.some((value) => value !== "")) rows.push(row);
+  return rows;
+}
+
+function normalizeHeader(value) {
+  return value.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function findColumn(headers, candidates) {
+  const normalized = headers.map(normalizeHeader);
+  for (const candidate of candidates) {
+    const index = normalized.findIndex((header) => header.includes(candidate));
+    if (index !== -1) return index;
+  }
+  return -1;
+}
+
+function secureRandomIndex(max) {
+  if (max <= 0) throw new Error("No entries available.");
+  const limit = Math.floor(0x100000000 / max) * max;
+  const array = new Uint32Array(1);
+  let value;
+  do {
+    crypto.getRandomValues(array);
+    value = array[0];
+  } while (value >= limit);
+  return value % max;
+}
+
+function importEntries() {
+  const file = $("csvFile").files[0];
+  if (!file) {
+    alert("Please choose a CSV file first.");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const table = parseCSV(reader.result);
+      if (table.length < 2) throw new Error("The CSV does not contain any data rows.");
+
+      const headers = table[0];
+      const nameIndex = findColumn(headers, ["name", "username", "user", "author", "profile"]);
+      const commentIndex = findColumn(headers, ["comment", "message", "text", "content", "reply"]);
+      const dateIndex = findColumn(headers, ["date", "time", "created", "timestamp"]);
+
+      if (nameIndex === -1 || commentIndex === -1) {
+        throw new Error("Could not find name and comment columns. Rename them to Name and Comment, then try again.");
+      }
+
+      allRows = table.slice(1).map((row, index) => ({
+        id: index + 1,
+        name: (row[nameIndex] || "").trim(),
+        comment: (row[commentIndex] || "").trim(),
+        date: dateIndex >= 0 ? (row[dateIndex] || "").trim() : ""
+      }));
+
+      applyRules();
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+  reader.onerror = () => alert("The CSV file could not be read.");
+  reader.readAsText(file);
+}
+
+function applyRules() {
+  const requireDone = $("requireDone").checked;
+  const removeDuplicates = $("removeDuplicates").checked;
+  const ignoreBlank = $("ignoreBlank").checked;
+
+  let invalid = 0;
+  let duplicates = 0;
+  const seen = new Set();
+  const result = [];
+
+  for (const entry of allRows) {
+    const blank = !entry.name || !entry.comment;
+    const missingDone = requireDone && !/\bdone\b/i.test(entry.comment);
+
+    if ((ignoreBlank && blank) || missingDone) {
+      invalid++;
+      continue;
+    }
+
+    const key = entry.name.toLowerCase().trim();
+    if (removeDuplicates && seen.has(key)) {
+      duplicates++;
+      continue;
+    }
+
+    seen.add(key);
+    result.push(entry);
+  }
+
+  validEntries = result;
+  $("totalCount").textContent = allRows.length;
+  $("duplicateCount").textContent = duplicates;
+  $("invalidCount").textContent = invalid;
+  $("validCount").textContent = validEntries.length;
+  $("statsSection").classList.remove("hidden");
+  renderEntries();
+  $("statsSection").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function renderEntries() {
+  const query = $("searchInput").value.trim().toLowerCase();
+  const filtered = validEntries.filter((entry) =>
+    entry.name.toLowerCase().includes(query) ||
+    entry.comment.toLowerCase().includes(query)
+  );
+
+  const list = $("entryList");
+  if (!filtered.length) {
+    list.innerHTML = '<p class="empty-state">No matching entries.</p>';
+    return;
+  }
+
+  list.innerHTML = filtered.slice(0, 500).map((entry) => `
+    <div class="entry">
+      <strong>${escapeHtml(entry.name)}</strong>
+      <p>${escapeHtml(entry.comment)}</p>
+    </div>
+  `).join("");
+
+  if (filtered.length > 500) {
+    list.insertAdjacentHTML("beforeend", `<p class="empty-state">Showing first 500 of ${filtered.length} entries.</p>`);
+  }
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+  }[char]));
+}
+
+function startDraw() {
+  if (!validEntries.length) {
+    alert("There are no valid entries to draw from.");
+    return;
+  }
+
+  $("drawSection").classList.remove("hidden");
+  $("winnerCard").classList.add("hidden");
+  $("lotteryMachine").classList.remove("hidden");
+  $("lotteryMachine").classList.remove("spinning");
+  $("winnerBall").classList.remove("drop");
+  $("winnerBall").textContent = "?";
+  $("countdown").classList.remove("hidden");
+  $("shuffleName").classList.remove("hidden");
+  $("countdown").textContent = "3";
+  $("shuffleName").textContent = "Get ready...";
+
+  let count = 3;
+  const countdownTimer = setInterval(() => {
+    count--;
+    if (count > 0) {
+      $("countdown").textContent = count;
+    } else {
+      clearInterval(countdownTimer);
+      $("countdown").textContent = "GO";
+      setTimeout(() => {
+        $("countdown").classList.add("hidden");
+        $("lotteryMachine").classList.add("spinning");
+        shuffleNames();
+      }, 450);
+    }
+  }, 850);
+}
+
+function shuffleNames() {
+  let spins = 0;
+  const totalSpins = 36;
+  const timer = setInterval(() => {
+    const randomEntry = validEntries[secureRandomIndex(validEntries.length)];
+    $("shuffleName").textContent = randomEntry.name;
+    spins++;
+
+    if (spins >= totalSpins) {
+      clearInterval(timer);
+      currentWinner = validEntries[secureRandomIndex(validEntries.length)];
+      $("shuffleName").textContent = "Selecting winner...";
+      $("winnerBall").textContent = String(secureRandomIndex(90) + 10);
+      $("winnerBall").classList.add("drop");
+      setTimeout(revealWinner, 1250);
+    }
+  }, 95);
+}
+
+function revealWinner() {
+  $("lotteryMachine").classList.remove("spinning");
+  $("lotteryMachine").classList.add("hidden");
+  $("shuffleName").classList.add("hidden");
+  $("winnerName").textContent = currentWinner.name;
+  $("winnerComment").textContent = currentWinner.comment;
+  $("winnerMeta").textContent = `Selected from ${validEntries.length} valid entries`;
+  $("winnerCard").classList.remove("hidden");
+  launchConfetti();
+}
+
+function launchConfetti() {
+  const container = $("confetti");
+  container.innerHTML = "";
+  for (let i = 0; i < 110; i++) {
+    const piece = document.createElement("span");
+    piece.style.left = `${Math.random() * 100}%`;
+    piece.style.background = ["#f4c84a", "#ffffff", "#e1a900", "#ffdd73"][Math.floor(Math.random() * 4)];
+    piece.style.animationDuration = `${2.5 + Math.random() * 2.5}s`;
+    piece.style.animationDelay = `${Math.random() * .8}s`;
+    piece.style.setProperty("--drift", `${-100 + Math.random() * 200}px`);
+    container.appendChild(piece);
+  }
+  setTimeout(() => container.innerHTML = "", 6000);
+}
+
+function saveWinner() {
+  if (!currentWinner) return;
+  const history = JSON.parse(localStorage.getItem("doubleEHistory") || "[]");
+  history.unshift({
+    giveaway: $("giveawayTitle").value.trim() || "Untitled giveaway",
+    winner: currentWinner.name,
+    comment: currentWinner.comment,
+    entryCount: validEntries.length,
+    savedAt: new Date().toISOString()
+  });
+  localStorage.setItem("doubleEHistory", JSON.stringify(history.slice(0, 50)));
+  renderHistory();
+  alert("Winner saved.");
+}
+
+function renderHistory() {
+  const history = JSON.parse(localStorage.getItem("doubleEHistory") || "[]");
+  const list = $("historyList");
+
+  if (!history.length) {
+    list.innerHTML = '<p class="empty-state">No saved winners yet.</p>';
+    return;
+  }
+
+  list.innerHTML = history.map((item) => `
+    <div class="history-item">
+      <strong>${escapeHtml(item.giveaway)}</strong>
+      <span>🏆 ${escapeHtml(item.winner)}</span>
+      <small>${item.entryCount} valid entries · ${new Date(item.savedAt).toLocaleString()}</small>
+    </div>
+  `).join("");
+}
+
+function downloadValidCSV() {
+  if (!validEntries.length) return;
+  const lines = [
+    ["Name", "Comment", "Date"],
+    ...validEntries.map((entry) => [entry.name, entry.comment, entry.date])
+  ].map((row) => row.map(csvEscape).join(","));
+
+  const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "double-e-valid-entries.csv";
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
+function csvEscape(value) {
+  const text = String(value ?? "");
+  return `"${text.replace(/"/g, '""')}"`;
+}
+
+$("importBtn").addEventListener("click", importEntries);
+$("searchInput").addEventListener("input", renderEntries);
+$("startDrawBtn").addEventListener("click", startDraw);
+$("rerollBtn").addEventListener("click", startDraw);
+$("saveWinnerBtn").addEventListener("click", saveWinner);
+$("downloadBtn").addEventListener("click", downloadValidCSV);
+$("closeDrawBtn").addEventListener("click", () => $("drawSection").classList.add("hidden"));
+$("clearHistoryBtn").addEventListener("click", () => {
+  if (confirm("Clear all saved giveaway history?")) {
+    localStorage.removeItem("doubleEHistory");
+    renderHistory();
+  }
+});
+
+renderHistory();
+
+</script>
+</body>
+</html>
